@@ -77,9 +77,14 @@ $dataDir = sys_get_temp_dir() . '/bookmind-data-' . getmypid();
 putenv("BOOKMIND_TEST_API=http://127.0.0.1:$MOCK/index.php");
 putenv("BOOKMIND_TEST_DATA=$dataDir");
 
-$p1 = proc_open("php -S 127.0.0.1:$MOCK -t $mockRoot", [], $x1);
+// The servers' fds go to /dev/null, NOT inherited: a child holding this
+// process's stdout keeps every pipe and log file open after the harness
+// exits, and the dtp lane hung on exactly that — a release waiting forever
+// on two mock servers nobody needed any more.
+$sink = [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']];
+$p1 = proc_open("exec php -S 127.0.0.1:$MOCK -t $mockRoot", $sink, $x1);
 $p2 = proc_open("BOOKMIND_TEST_API=http://127.0.0.1:$MOCK/index.php BOOKMIND_TEST_DATA=$dataDir "
-              . "php -S 127.0.0.1:$PORT -t " . escapeshellarg("$ROOT/public"), [], $x2);
+              . "exec php -S 127.0.0.1:$PORT -t " . escapeshellarg("$ROOT/public"), $sink, $x2);
 usleep(400000);
 
 function req(string $method, string $path, array $post = [], array &$jar = []): array
@@ -132,6 +137,7 @@ t('a CalMind account signs in and gets its own empty shelf', function () {
 });
 
 proc_terminate($p1); proc_terminate($p2);
+proc_close($p1); proc_close($p2);
 array_map('unlink', glob("$mockRoot/*") ?: []); @rmdir($mockRoot);
 array_map('unlink', glob("$dataDir/*") ?: []); @rmdir($dataDir);
 

@@ -24,6 +24,12 @@ source "$CONF"
 [[ -n ${HOST:-} ]] || { echo "$CONF sets no HOST" >&2; exit 1; }
 
 MODE="test"; DRY=""
+# BatchMode everywhere: an ssh that wants to ask a question must FAIL, not
+# wait — the first deploy hung ten silent minutes on exactly that. The flag
+# set is the site deploy's proven -rLptzv, verbatim: openrsync (macOS) against
+# the host's rsync wedged silently under --delete-excluded, so nothing here
+# deletes; stale files are removed by hand the day one exists.
+SSH="ssh -o BatchMode=yes -o ConnectTimeout=15"
 for a in "$@"; do
   case "$a" in
     test|prod|all) MODE="$a" ;;
@@ -40,12 +46,12 @@ echo "    all PHP OK."
 
 push() {  # $1 public dest, $2 lib dest, $3 data dir, $4 label
   echo "==> [$4] public/ -> $1  lib/ -> $2"
-  rsync -rlz $DRY --delete-excluded --exclude '.DS_Store' public/ "$HOST:$1/"
-  rsync -rlz $DRY --exclude '.DS_Store' lib/ "$HOST:$2/"
+  rsync -rLptzv $DRY -e "$SSH" --exclude '.DS_Store' public/ "$HOST:$1/"
+  rsync -rLptzv $DRY -e "$SSH" --exclude '.DS_Store' lib/ "$HOST:$2/"
   [[ -n $DRY ]] && return 0
   # The data dir belongs to the web user; the deploy only makes sure it exists
   # and that both users can reach it. Never synced, never deleted.
-  ssh -o BatchMode=yes "$HOST" "mkdir -p $1 $2 $3 && chgrp -R web $3 2>/dev/null; chmod 2770 $3 2>/dev/null;
+  $SSH "$HOST" "mkdir -p $1 $2 $3 && chgrp -R web $3 2>/dev/null; chmod 2770 $3 2>/dev/null;
     find $1 $2 -type d -exec chmod a+rx {} + && find $1 $2 -type f -exec chmod a+r {} +"
 }
 
