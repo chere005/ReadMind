@@ -29,6 +29,27 @@ calmind logins and call the new repo ReadMind"). Web only, deliberately: one
     php tools/test.php                  # lint, store round-trip, and the login
                                         # conversation against a MOCK CalMind
 
+## Traps that have cost real time here
+
+- **The harness leaves nothing behind, but a killed run does.** `tools/test.php`
+  boots a mock CalMind on 8797 and the app on 8796. Kill the run mid-flight and
+  those two survive it, and the NEXT run's servers fail to bind — the tests then
+  fail with "the gate shows (missing: Sign in…)", which reads as a broken login
+  and is a busy port. `lsof -ti tcp:8796` before believing it. The harness
+  itself sends its children's output to `/dev/null` and reaps them, because
+  inheriting this process's stdout kept the whole release lane open after the
+  tests had finished.
+- **openrsync wedges on `--delete-excluded`.** macOS ships openrsync; the host
+  runs rsync. With that flag the transfer hangs at zero CPU, for ever, with no
+  error — ten silent minutes twice before it was found. `deploy.sh` uses the
+  suite's proven `-rLptzv -e "ssh -o BatchMode=yes"` and deletes nothing;
+  BatchMode matters on its own, so an ssh that wants to ask a question fails
+  instead of waiting.
+- **The gate is CalMind's, so it can fail for reasons that are not here.**
+  A sign-in needs that instance's CalMind reachable; the app is fine and the
+  login still refuses. The mock in the harness exists precisely so this repo's
+  own half can be tested without one.
+
 ## Deploy
 
 `./deploy.sh` (test) / `prod` / `all` — one-way rsync onto the seancheren.com
