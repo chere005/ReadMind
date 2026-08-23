@@ -1,8 +1,8 @@
 <?php
 /**
- * BookMind's one lib — config, the CalMind-backed login, and the small
+ * ReadMind's one lib — config, the CalMind-backed login, and the small
  * helpers the page needs. Sean, 2026-08-23: "make a clone of akisbookshelf
- * that uses calmind logins and call the new repo BookMind".
+ * that uses calmind logins and call the new repo ReadMind".
  *
  * WHY CALMIND LOGINS. This app has no account store, no signup flow and no
  * password to hash, on purpose: a username and password are proven by POSTing
@@ -51,15 +51,15 @@ function app_config(): array
     $onHost = is_dir('/home/protected');
     $cfg = [
         'base'     => $inst === '' ? '' : '/' . $inst,
-        'data_dir' => $onHost ? '/home/protected/bookmind-data' . $suffix
+        'data_dir' => $onHost ? '/home/protected/readmind-data' . $suffix
                               : dirname(__DIR__) . '/data' . $suffix,
         'data_key' => '',
         'calmind_api' => 'https://' . ($inst === '' ? '' : $inst . '.') . 'seancheren.com/CalMind/api/index.php',
     ];
     // The harness reroutes both taps — tools/test.php runs a mock CalMind and
     // a scratch data dir, and this is the whole seam it needs.
-    if (($api = getenv('BOOKMIND_TEST_API')) !== false && $api !== '') { $cfg['calmind_api'] = $api; }
-    if (($dd = getenv('BOOKMIND_TEST_DATA')) !== false && $dd !== '') { $cfg['data_dir'] = $dd; }
+    if (($api = getenv('READMIND_TEST_API')) !== false && $api !== '') { $cfg['calmind_api'] = $api; }
+    if (($dd = getenv('READMIND_TEST_DATA')) !== false && $dd !== '') { $cfg['data_dir'] = $dd; }
     return $cfg;
 }
 
@@ -103,7 +103,7 @@ function calmind_login_ok(string $user, string $pass): bool
 /**
  * The gate. Renders a login form and exits until a CalMind account signs in;
  * the session cookie is per instance, so being signed into production's
- * BookMind says nothing about the sandboxes'.
+ * ReadMind says nothing about the sandboxes'.
  */
 function require_login(string $area): void
 {
@@ -118,7 +118,7 @@ function require_login(string $area): void
         header('Location: ' . strtok((string) $_SERVER['REQUEST_URI'], '?'));
         exit;
     }
-    if (!empty($_SESSION['user'])) { hit_log('BookMind'); return; }
+    if (!empty($_SESSION['user'])) { hit_log('ReadMind'); return; }
 
     $err = '';
     if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['bm_user'], $_POST['bm_pass'])) {
@@ -126,14 +126,14 @@ function require_login(string $area): void
         if ($u !== '' && calmind_login_ok($u, (string) $_POST['bm_pass'])) {
             session_regenerate_id(true);
             $_SESSION['user'] = $u;
-            hit_log('BookMind', $u);
+            hit_log('ReadMind', $u);
             header('Location: ' . strtok((string) $_SERVER['REQUEST_URI'], '?'));
             exit;
         }
         $err = 'Invalid username or password.';
-        hit_log('BookMind');
+        hit_log('ReadMind');
     } else {
-        hit_log('BookMind');
+        hit_log('ReadMind');
     }
 
     $area = htmlspecialchars($area, ENT_QUOTES);
@@ -161,7 +161,7 @@ function require_login(string $area): void
 }
 
 /**
- * BookMind's settings window — the shell of the suite's (same ids, so the
+ * ReadMind's settings window — the shell of the suite's (same ids, so the
  * page's own theme-picker script binds unchanged) with the parts that cannot
  * be true here cut out. No password form: the password is a CalMind account's,
  * and the one place to change it is CalMind. No suite theme row: this app's

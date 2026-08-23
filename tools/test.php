@@ -1,6 +1,6 @@
 <?php
 /**
- * BookMind's tests — no framework, all or nothing, same shape as the site's.
+ * ReadMind's tests — no framework, all or nothing, same shape as the site's.
  *
  * The login is CalMind's, so the harness runs a MOCK CalMind API and points
  * the app at it: the test proves this side of the conversation — the right
@@ -36,7 +36,7 @@ t('every PHP file parses', function () use ($ROOT) {
 
 // ------------------------------------------------------------- the store
 t('the store round-trips, encrypted at rest', function () use ($ROOT) {
-    $dir = sys_get_temp_dir() . '/bookmind-test-' . getmypid();
+    $dir = sys_get_temp_dir() . '/readmind-test-' . getmypid();
     @mkdir($dir, 0700, true);
     // app_config() is derived, so the store is exercised directly with a
     // hand-built cfg — same functions the page calls.
@@ -54,7 +54,7 @@ t('the store round-trips, encrypted at rest', function () use ($ROOT) {
 });
 
 // ------------------------------------------- the login conversation, mocked
-$mockRoot = sys_get_temp_dir() . '/bookmind-mock-' . getmypid();
+$mockRoot = sys_get_temp_dir() . '/readmind-mock-' . getmypid();
 @mkdir($mockRoot, 0700, true);
 file_put_contents("$mockRoot/index.php", <<<'PHP'
 <?php
@@ -71,11 +71,11 @@ if (($in['action'] ?? '') === 'login'
 }
 PHP);
 
-$dataDir = sys_get_temp_dir() . '/bookmind-data-' . getmypid();
+$dataDir = sys_get_temp_dir() . '/readmind-data-' . getmypid();
 @mkdir($dataDir, 0700, true);
-// The app under test: BOOKMIND_TEST reroutes config at the top of app.php.
-putenv("BOOKMIND_TEST_API=http://127.0.0.1:$MOCK/index.php");
-putenv("BOOKMIND_TEST_DATA=$dataDir");
+// The app under test: READMIND_TEST reroutes config at the top of app.php.
+putenv("READMIND_TEST_API=http://127.0.0.1:$MOCK/index.php");
+putenv("READMIND_TEST_DATA=$dataDir");
 
 // The servers' fds go to /dev/null, NOT inherited: a child holding this
 // process's stdout keeps every pipe and log file open after the harness
@@ -83,7 +83,7 @@ putenv("BOOKMIND_TEST_DATA=$dataDir");
 // on two mock servers nobody needed any more.
 $sink = [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']];
 $p1 = proc_open("exec php -S 127.0.0.1:$MOCK -t $mockRoot", $sink, $x1);
-$p2 = proc_open("BOOKMIND_TEST_API=http://127.0.0.1:$MOCK/index.php BOOKMIND_TEST_DATA=$dataDir "
+$p2 = proc_open("READMIND_TEST_API=http://127.0.0.1:$MOCK/index.php READMIND_TEST_DATA=$dataDir "
               . "exec php -S 127.0.0.1:$PORT -t " . escapeshellarg("$ROOT/public"), $sink, $x2);
 usleep(400000);
 
@@ -131,7 +131,7 @@ t('a CalMind account signs in and gets its own empty shelf', function () {
     $r = req('POST', '/', ['bm_user' => 'reader', 'bm_pass' => 'readerpw'], $jar);
     ok($r['status'] === 302, "login should redirect (got {$r['status']})");
     $r2 = req('GET', '/', [], $jar);
-    has('BookMind', $r2['body'], 'the app renders');
+    has('ReadMind', $r2['body'], 'the app renders');
     ok(!str_contains($r2['body'], 'Sign in with your CalMind account'), 'past the gate');
     has('reader', $r2['body'], 'and knows who signed in');
 });

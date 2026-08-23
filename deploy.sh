@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Deploy BookMind — one source tree onto three instances of the same host:
+# Deploy ReadMind — one source tree onto three instances of the same host:
 #
-#   prod   /home/public/BookMind        lib -> /home/protected/bookmind-lib
-#   test   /home/public/test/BookMind   lib -> /home/protected/bookmind-lib-test
-#   dev    /home/public/dev/BookMind    lib -> /home/protected/bookmind-lib-dev
+#   prod   /home/public/ReadMind        lib -> /home/protected/readmind-lib
+#   test   /home/public/test/ReadMind   lib -> /home/protected/readmind-lib-test
+#   dev    /home/public/dev/ReadMind    lib -> /home/protected/readmind-lib-dev
 #
 #   ./deploy.sh            -> TEST only (the safe default, suite-wide)
 #   ./deploy.sh prod       -> production only
@@ -11,8 +11,8 @@
 #   ./deploy.sh --dry-run  -> say what would happen, change nothing
 #
 # The instance split rides seancheren-site's .htaccess: test./dev. subdomains
-# rewrite into /test/ and /dev/, so BookMind only has to BE there. Data dirs
-# (bookmind-data{,-test,-dev}) are created web-writable and never synced —
+# rewrite into /test/ and /dev/, so ReadMind only has to BE there. Data dirs
+# (readmind-data{,-test,-dev}) are created web-writable and never synced —
 # same one-way, no-delete, no-secrets rules as every deploy in the suite.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -56,12 +56,12 @@ push() {  # $1 public dest, $2 lib dest, $3 data dir, $4 label
 }
 
 case "$MODE" in
-  test) push /home/public/test/BookMind /home/protected/bookmind-lib-test /home/protected/bookmind-data-test TEST ;;
-  prod) push /home/public/BookMind      /home/protected/bookmind-lib      /home/protected/bookmind-data      PROD ;;
+  test) push /home/public/test/ReadMind /home/protected/readmind-lib-test /home/protected/readmind-data-test TEST ;;
+  prod) push /home/public/ReadMind      /home/protected/readmind-lib      /home/protected/readmind-data      PROD ;;
   all)
-    push /home/public/BookMind      /home/protected/bookmind-lib      /home/protected/bookmind-data      PROD
-    push /home/public/test/BookMind /home/protected/bookmind-lib-test /home/protected/bookmind-data-test TEST
-    push /home/public/dev/BookMind  /home/protected/bookmind-lib-dev  /home/protected/bookmind-data-dev  DEV
+    push /home/public/ReadMind      /home/protected/readmind-lib      /home/protected/readmind-data      PROD
+    push /home/public/test/ReadMind /home/protected/readmind-lib-test /home/protected/readmind-data-test TEST
+    push /home/public/dev/ReadMind  /home/protected/readmind-lib-dev  /home/protected/readmind-data-dev  DEV
     ;;
 esac
 echo "==> Done ($MODE). Data dirs were not touched."

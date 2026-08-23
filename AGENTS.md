@@ -1,4 +1,4 @@
-# Working on BookMind
+# Working on ReadMind
 
 The baseline for all of Sean's repos lives in ~/GIT/AgentSuite/AGENTS.md
 and is imported here; this file holds only what is true of THIS repo.
@@ -6,7 +6,7 @@ and is imported here; this file holds only what is true of THIS repo.
 
 The bookshelf, for every CalMind account — cloned from seancheren-site's
 akisbookshelf on 2026-08-23 (Sean: "make a clone of akisbookshelf that uses
-calmind logins and call the new repo BookMind"). Web only, deliberately: one
+calmind logins and call the new repo ReadMind"). Web only, deliberately: one
 `public/index.php` renders everything, `lib/app.php` is the whole lib.
 
 ## Standing rules
@@ -32,6 +32,6 @@ calmind logins and call the new repo BookMind"). Web only, deliberately: one
 ## Deploy
 
 `./deploy.sh` (test) / `prod` / `all` — one-way rsync onto the seancheren.com
-host, subpath `/BookMind` per instance, data in `bookmind-data*` never synced.
+host, subpath `/ReadMind` per instance, data in `readmind-data*` never synced.
 `npm`-free, build-free. `tools/dtp.sh` / `tdtp.sh` are the release lanes; the
 tag is the version (no version file).

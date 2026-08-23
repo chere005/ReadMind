@@ -1,5 +1,5 @@
 #!/bin/sh
-# dtp — deploy, tag, push, for BookMind. tdtp — the same with the full test
+# dtp — deploy, tag, push, for ReadMind. tdtp — the same with the full test
 # run in front: tools/tdtp.sh, which calls this with --full.
 #
 # Sean, 2026-08-23: "tdtp all apps and sites" — the apps each carry a lane and
@@ -41,7 +41,7 @@ RUN_ID=""
 REPORT_DONE=0
 if [ -f "$REPORTER" ]; then
   KIND=dtp; [ "$FULL" = 1 ] && KIND=tdtp
-  RUN_ID=$(sh "$REPORTER" start "$KIND" BookMind 2>/dev/null || true)
+  RUN_ID=$(sh "$REPORTER" start "$KIND" ReadMind 2>/dev/null || true)
   trap 'if [ -n "$RUN_ID" ] && [ "$REPORT_DONE" != 1 ]; then sh "$REPORTER" finish "$RUN_ID" failed 3 "stopped before finishing" >/dev/null 2>&1 || true; fi' EXIT INT TERM
 fi
 
@@ -80,7 +80,7 @@ NEW="$MAJ.$((MIN + 1)).0"
 ./deploy.sh all
 
 # --------------------------------------------------------------- tag and push
-git tag -a "$NEW" -m "BookMind $NEW"
+git tag -a "$NEW" -m "ReadMind $NEW"
 git push --atomic --follow-tags origin main "$NEW" || {
   git tag -d "$NEW" >/dev/null 2>&1 || true
   echo "push rejected — main moved on the remote. Pull and re-run; the deploy already landed." >&2

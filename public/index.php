@@ -1,8 +1,8 @@
 <?php
 /**
- * BookMind — the bookshelf, for every CalMind account. Cloned from
- * seancheren-site's BookMind on 2026-08-23 (Sean: "make a clone of
- * BookMind that uses calmind logins and call the new repo BookMind") and
+ * ReadMind — the bookshelf, for every CalMind account. Cloned from
+ * seancheren-site's ReadMind on 2026-08-23 (Sean: "make a clone of
+ * ReadMind that uses calmind logins and call the new repo ReadMind") and
  * different from it in exactly two ways: anyone with a CalMind account may
  * sign in (the bookshelf is aki's alone), and the login is CalMind's — this
  * repo holds no accounts at all. Books and notes are per user, so each
@@ -11,13 +11,13 @@
  * lib/app.php carries the instance detection, the CalMind-backed login and
  * the store; this page is the whole UI, one file, no build step.
  */
-$__cands = [dirname(__DIR__) . '/lib', '/home/protected/bookmind-lib'];
+$__cands = [dirname(__DIR__) . '/lib', '/home/protected/readmind-lib'];
 // The sandbox mirrors carry their own lib copy beside their own data.
 foreach (['test', 'dev'] as $__i) {
     if (preg_match('#/' . $__i . '(/|$)#', __DIR__) === 1
         || strncmp($_SERVER['REQUEST_URI'] ?? '', '/' . $__i . '/', strlen($__i) + 2) === 0
         || strncmp(strtolower((string) ($_SERVER['HTTP_HOST'] ?? '')), $__i . '.', strlen($__i) + 1) === 0) {
-        $__cands = [dirname(__DIR__, 2) . '/lib', '/home/protected/bookmind-lib-' . $__i];
+        $__cands = [dirname(__DIR__, 2) . '/lib', '/home/protected/readmind-lib-' . $__i];
         break;
     }
 }
@@ -25,7 +25,7 @@ $__libDir = null;
 foreach ($__cands as $__c) { if (is_file($__c . '/app.php')) { $__libDir = $__c; break; } }
 require_once $__libDir . '/app.php';
 require_once $__libDir . '/richtext.php';   // note-body toolbar + sanitiser
-require_login('BookMind');
+require_login('ReadMind');
 
 $cfg       = app_config();
 $booksFile = user_data_file($cfg['data_dir'], 'books');       // array of book cards
@@ -76,7 +76,7 @@ function book_cover(array $b, string $size = 'M'): string
 {
     $id = (string) ($b['id'] ?? '');
     if ($id !== '' && isset(cached_cover_set()[$id . '.webp'])) {
-        return '/BookMind/covers/' . $id . '.webp';
+        return '/ReadMind/covers/' . $id . '.webp';
     }
     return book_cover_source($b, $size);
 }
@@ -657,9 +657,9 @@ function books_header(string $titleHtml, bool $withEdit = false): void
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Aki&#39;s Bookshelf">
-  <link rel="apple-touch-icon" href="<?= suite_base() ?>/BookMind/icon-180.png">
-  <link rel="icon" href="<?= suite_base() ?>/BookMind/icon-192.png">
-  <link rel="manifest" href="<?= suite_base() ?>/BookMind/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="<?= suite_base() ?>/ReadMind/icon-180.png">
+  <link rel="icon" href="<?= suite_base() ?>/ReadMind/icon-192.png">
+  <link rel="manifest" href="<?= suite_base() ?>/ReadMind/manifest.webmanifest">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 1.5rem 1rem; }
@@ -990,7 +990,7 @@ function books_header(string $titleHtml, bool $withEdit = false): void
 <div class="wrap">
 <?php if (!$book): ?>
   <!-- ===================== BOOKS LIST ===================== -->
-  <?php books_header('<h1>BookMind</h1>', true); ?>
+  <?php books_header('<h1>ReadMind</h1>', true); ?>
 
   <?php if ($shelf === 'data'): ?>
     <?php

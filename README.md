@@ -1,7 +1,7 @@
-# BookMind
+# ReadMind
 
 A bookshelf for every CalMind account, at
-[seancheren.com/BookMind](https://seancheren.com/BookMind) — plain PHP, no
+[seancheren.com/ReadMind](https://seancheren.com/ReadMind) — plain PHP, no
 framework, no build step. Cloned from seancheren.com's private bookshelf and
 different in exactly two ways: anyone with a CalMind account may sign in, and
 the sign-in IS CalMind's — this repo stores no credentials at all.
