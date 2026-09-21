@@ -9,6 +9,11 @@ akisbookshelf on 2026-08-23 (Sean: "make a clone of akisbookshelf that uses
 calmind logins and call the new repo ReadMind"). Web only, deliberately: one
 `public/index.php` renders everything, `lib/app.php` is the whole lib.
 
+`ARCHITECTURE.md` is the map — the tree, the login, what is on disk, the three
+instances, the deploy and the release lane, with the reasons. `README.md` is
+the short front door. This file is the rules; where it and ARCHITECTURE.md
+disagree, this file wins.
+
 ## Standing rules
 
 - **This repo holds no accounts.** A login is proven by POSTing CalMind's own
