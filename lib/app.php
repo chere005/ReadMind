@@ -54,7 +54,7 @@ function app_config(): array
         'data_dir' => $onHost ? '/home/protected/readmind-data' . $suffix
                               : dirname(__DIR__) . '/data' . $suffix,
         'data_key' => '',
-        'calmind_api' => 'https://' . ($inst === '' ? '' : $inst . '.') . 'seancheren.com/CalMind/api/index.php',
+        'calmind_api' => getenv('READMIND_CALMIND_API_URL') ?: 'https://' . ($inst === '' ? '' : $inst . '.') . 'seancheren.com/CalMind/api/index.php',
     ];
     // The harness reroutes both taps — tools/test.php runs a mock CalMind and
     // a scratch data dir, and this is the whole seam it needs.

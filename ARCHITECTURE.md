@@ -78,10 +78,10 @@ the single file where that switch happens.
 `bm_instance()` decides which instance a request is from the same three signals
 seancheren-site's pages use: the directory the code runs from, the request path,
 and the subdomain the rewrite serves. Production is the empty string; `test` and
-`dev` are the sandboxes. Everything instance-specific is derived from it rather
-than configured — the base path, which data directory to use, and which CalMind
-answers logins. This app has no secrets of its own, so there is nothing else a
-per-instance config file would have held.
+`dev` are the sandboxes. The base path and data directory are derived from the
+instance. Which CalMind API answers logins can be overridden per server process
+with `READMIND_CALMIND_API_URL`; if unset, each instance keeps using its matching
+CalMind host. This app has no secrets of its own.
 
 The instance split rides seancheren-site's `.htaccess`: the `test.` and `dev.`
 subdomains rewrite into `/test/` and `/dev/`, so ReadMind only has to BE there.
